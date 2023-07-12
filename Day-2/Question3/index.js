@@ -92,12 +92,24 @@ const increment = () => {
 increment();
 console.log(increment());
 
+// const desQuery = (url) => {
+//   const newUrl = new URL(url);
+//   let obj = {};
+//   newUrl.searchParams.forEach((value, key) => {
+//     obj[key] = value;
+//   });
+//   return obj;
+// };
+
 const desQuery = (url) => {
-  const newUrl = new URL(url);
   let obj = {};
-  newUrl.searchParams.forEach((value, key) => {
-    obj[key] = value;
-  });
+  const newUrl = url.split("?");
+  const url1 = newUrl[1].split("&");
+  for (let i = 0; i < url1.length; i++) {
+    const finalUrl = url1[i].split("=");
+    obj[finalUrl[0]] = finalUrl[1];
+  }
   return obj;
 };
+
 console.log(desQuery("http://xyz.com?a=Hi&b=Bye"));
