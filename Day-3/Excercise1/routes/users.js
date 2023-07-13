@@ -1,9 +1,11 @@
-import { Router } from "express";
-var router = Router();
+import express from "express";
+import {
+  loginUserController,
+  registerUserController,
+} from "../controller/users.js";
+var userRouter = express.Router();
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
+userRouter.post("/", registerUserController);
+userRouter.post("/login", loginUserController);
 
-export default router;
+export default userRouter;

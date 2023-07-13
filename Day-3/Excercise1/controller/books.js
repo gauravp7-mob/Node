@@ -1,8 +1,9 @@
 import {
   findBooksByAuthor,
   getAllBooks,
-  createBook,
   deleteBookByAuthor,
+  deleteBookById,
+  createBook,
 } from "../service/books.js";
 
 export const getAllBooksController = async (req, res) => {
@@ -22,6 +23,11 @@ export const createBookController = async (req, res) => {
 };
 export const deleteBookByAuthorController = async (req, res) => {
   const author = req.params.authorName;
-  const updatedBooks = await deleteBookByAuthor(author);
-  res.send(updatedBooks);
+  const response = await deleteBookByAuthor(author);
+  res.send(response);
+};
+export const deleteBookByIdController = async (req, res) => {
+  const id = req.params.id;
+  const response = await deleteBookById(id);
+  res.send(response);
 };

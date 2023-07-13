@@ -6,8 +6,13 @@ import logger from "morgan";
 import path from "path";
 const __dirname = path.resolve();
 import indexRouter from "./routes/index.js";
-import usersRouter from "./routes/users.js";
+import userRouter from "./routes/users.js";
 import router from "./routes/books.js";
+import mongoose from "mongoose";
+
+mongoose
+  .connect("mongodb://localhost:27017/Exercise")
+  .then(() => console.log("Connected!"));
 
 var app = express();
 
@@ -22,7 +27,7 @@ app.use(cookieParser());
 // app.use(join(__dirname, "public"));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/users", userRouter);
 app.use("/books", router);
 
 // catch 404 and forward to error handler
