@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Private Messaging Chat App</title>
+
+    <style>
+      #main-container {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+      }
+      #active-users {
+        flex-grow: 1;
+        border-right: 2px solid black;
+      }
+      #chat-container {
+        flex-grow: 5;
+      }
+
+      #send-container {
+        position: fixed;
+        padding-bottom: 30px;
+        bottom: 0;
+        background-color: white;
+        max-width: 1200px;
+        width: 80%;
+        display: flex;
+      }
+      #messageInput {
+        flex-grow: 1;
+      }
+
+      /* #message-container div {
+        background-color: #CCC;
+        padding: 5px;
+      }
+  
+      #message-container div:nth-child(2n) {
+        background-color: #FFF;
+      }
+  
+      #send-container {
+        position: fixed;
+        padding-bottom: 30px;
+        bottom: 0;
+        background-color: white;
+        max-width: 1200px;
+        width: 80%;
+        display: flex;
+      }
+  
+      #message-input {
+        flex-grow: 1;
+      } */
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Private Messaging Chat App</h1>
+      <input type="text" id="usernameInput" placeholder="Username" />
+      <button onclick="login()">Login</button>
+      <div id="main-container">
+        <div id="active-users">
+          <h2>Active Users:</h2>
+          <ul id="activeUsersList"></ul>
+          <h2>Chat:</h2>
+          <select id="recipientSelect"></select>
+        </div>
+        <div id="chat-container">
+          <div id="send-container">
+            <input type="text" id="messageInput" placeholder="Type a message" />
+
+            <button onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      let username = "";
+      const chatContainer = document.getElementById("chat-container");
+      function login() {
+        username = document.getElementById("usernameInput").value;
+        socket.emit("login", username);
+        document.getElementById("usernameInput").disabled = true;
+        document.querySelector("button").disabled = true;
+      }
+      function sendMessage() {
+        const recipient = document.getElementById("recipientSelect").value;
+        const message = document.getElementById("messageInput").value;
+        const sender = document.getElementById("usernameInput").value;
+        if (recipient && message) {
+          socket.emit("private-message", {
+            recipient: recipient,
+            message: message,
+            sender: sender,
+          });
+        }
+      }
+      socket.on("active-users", (activeUsers) => {
+        const activeUsersList = document.getElementById("activeUsersList");
+        activeUsersList.innerHTML = "";
+        activeUsers.forEach((user) => {
+          if (user !== username) {
+            const userElement = document.createElement("li");
+            userElement.innerText = user;
+            activeUsersList.appendChild(userElement);
+          }
+        });
+
+        const recipientSelect = document.getElementById("recipientSelect");
+        recipientSelect.innerHTML = "";
+        activeUsers.forEach((user) => {
+          if (user !== username) {
+            const option = document.createElement("option");
+            option.value = user;
+            option.innerText = user;
+            recipientSelect.appendChild(option);
+          }
+        });
+      });
+      socket.on("private-message", (data) => {
+        // Handle incoming private messages here
+        const messageElement = document.createElement("div");
+        messageElement.innerText = `${data.sender}: ${data.message}`;
+        chatContainer.appendChild(messageElement);
+      });
+    </script>
+  </body>
+</html>
