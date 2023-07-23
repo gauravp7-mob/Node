@@ -1,4 +1,4 @@
-import { schema } from "../schema/users.js";
+import { schema } from "../validationSchema/users.js";
 
 export const validate = (req, res, next) => {
   const { error } = schema.validate(req.body);

@@ -1,4 +1,3 @@
-import fs from "fs/promises";
 import _ from "lodash";
 import { bookModel } from "../model/books.js";
 // export const getAllBooks = async () => {
@@ -14,7 +13,7 @@ import { bookModel } from "../model/books.js";
 //     if (booksFound) {
 //       return booksFound;
 //     }
-//     throw new Error("Not found");
+//   throw new Error("Not found");
 //   } catch (error) {
 //     console.log(error);
 //     return error.message;
@@ -66,7 +65,7 @@ export const createBook = async (book) => {
   }
 };
 
-export const findBooksByAuthor = async (author) => {
+const findBooksByAuthor = async (author) => {
   try {
     const booksFound = await bookModel.find({ author: author });
     if (booksFound.length > 0) {
@@ -104,3 +103,5 @@ export const deleteBookById = async (id) => {
     return error.message;
   }
 };
+
+export const bookService = { findBooksByAuthor };
