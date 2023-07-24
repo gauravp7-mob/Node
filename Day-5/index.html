@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chat App</title>
+  <style>
+    
+  #container{
+    display: flex;
+    flex-direction: row;
+    height:100vh;
+  }
+  #connected-users{
+    flex-grow:1;
+    border-right:2px solid black;
+  }
+    #message-container {
+      flex-grow:5
+    }
+
+    #message-container div {
+      background-color: #CCC;
+      padding: 5px;
+    }
+
+    #message-container div:nth-child(2n) {
+      background-color: #FFF;
+    }
+
+    #send-container {
+      position: fixed;
+      padding-bottom: 30px;
+      bottom: 0;
+      background-color: white;
+      max-width: 1200px;
+      width: 80%;
+      display: flex;
+    }
+
+    #message-input {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+  <div id="connected-users">
+    <h3>Active users</h3>
+    <ul id ="connected-users-list"></ul>
+
+  </div>
+  <div id="message-container">
+  <form id="send-container">
+    <input type="text" id="message-input">
+    <button type="submit" id="send-button">Send</button>
+  </form>
+</div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>const socket = io("http://localhost:3000");
+    const messageContainer = document.getElementById("message-container");
+    const messageForm = document.getElementById("send-container");
+    const messageInput = document.getElementById("message-input");
+    const dataArray =[];
+    const name = prompt("What is your name?");
+    appendMessage("You joined");
+    socket.emit("new-user", name);
+
+
+    socket.on('user-list',data=>{
+      const dataArray = data
+      console.log(dataArray)
+      let list = document.getElementById("connected-users-list");
+        for (i = 0; i < dataArray.length; ++i) {
+            let li = document.createElement('li');
+            li.innerText = dataArray[i];
+            list.appendChild(li);
+        }
+    })
+    socket.on("chat-message", (data) => {
+      appendMessage(`${data.name}: ${data.message}`);
+    });
+    
+    socket.on("user-connected", (name) => {
+      appendMessage(`${name} joined the chat`);
+    });
+    
+    socket.on("user-disconnected", (name) => {
+      appendMessage(`${name} left the chat`);
+    });
+    
+    messageForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = messageInput.value;
+      appendMessage(`You: ${message}`);
+      socket.emit("send-chat-message", message);
+      messageInput.value = "";
+    });
+    
+    function appendMessage(message) {
+      const messageElement = document.createElement("div");
+      messageElement.innerText = message;
+      messageContainer.append(messageElement);
+    }
+    </script>
+</body>
+</html>
